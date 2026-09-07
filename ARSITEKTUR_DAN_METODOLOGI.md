@@ -145,7 +145,7 @@ Fokus: Meminimalkan selisih antara Bull F1 dan Bear F1 ($|\\text{Bull} - \\text{
 
 | Horizon | Arsitektur Master Balanced | Akurasi | Bull F1 | Bear F1 | Macro F1 | Gap F1 (Selisih) | Coverage |
 |---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **7 Hari** | Dual-Q 20% (Setup B) | **54.35%** | 0.5550 | **0.5315** | **0.5432** | **0.0235 (2.3%)** | 40.0% |
+| **7 Hari** | Setup A (SHAP-5, Top 20% Gate) | **56.14%** | 0.5994 | **0.5155** | **0.5574** | **0.0839 (8.4%)** | 20.0% |
 | **14 Hari** | Dual-Head Specialist (A-35% / B-20%) | **60.99%** | 0.6406 | **0.5734** | **0.6070** | **0.0672 (6.7%)** | 44.9% |
 | **30 Hari** | Dual-Q 30% (Setup B) | **58.67%** | 0.6019 | **0.5703** | **0.5861** | **0.0316 (3.1%)** | 60.0% |
 | **90 Hari** | Dual-Q 25% (Setup B) | **63.35%** | 0.6111 | **0.6534** | **0.6322** | **0.0423 (4.2%)** | 50.0% |
