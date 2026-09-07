@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temporary / OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Heavy data cache (keep CSVs if needed, or exclude large binaries)
