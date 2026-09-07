@@ -14,9 +14,12 @@ This repository contains the complete quantitative pipeline developed to forecas
 
 ---
 
-## 🏆 Benchmark Results (Top 1 Architectures per Horizon)
+## 🏆 Benchmark Results
 
-Evaluated out-of-sample across 3,900 daily bars using walk-forward cross-validation (strictly preserving time-series causality):
+Evaluated out-of-sample across 3,900 daily bars using walk-forward cross-validation (strictly preserving time-series causality). We classify models into two practical deployment profiles:
+
+### Profile A: Top 1 (Win-Rate & Bull Momentum Hunter)
+Designed for trend-following spot / leveraged long strategies to maximize return capture during expansion legs:
 
 | Horizon | Winning Architecture | Directional Accuracy | Bull F1 | Bear F1 | Macro F1 | Market Coverage | Key Mechanism |
 |---|---|:---:|:---:|:---:|:---:|:---:|---|
@@ -24,6 +27,18 @@ Evaluated out-of-sample across 3,900 daily bars using walk-forward cross-validat
 | **14 Days** | Setup A (SHAP-5, Gate 35%) | **61.50%** | 0.6983 | 0.4680 | 0.5832 | 35.0% | Peak win-rate during expansion legs |
 | **30 Days** | Soft-Blend Hybrid (60:40, Gate 40%) | **62.38%** | 0.7019 | 0.4904 | 0.5962 | 40.0% | HMM latent regime + asymmetric penalty |
 | **90 Days** | Veto-Consensus ($P_A \ge 0.58, P_B \le 0.44$) | **67.61%** | **0.7549** | **0.5228** | **0.6389** | **75.3%** | Macro + Halving validated by Monthly SMA |
+
+---
+
+### Profile B: Master Balanced (Symmetric Long/Short & Crash Protection)
+Designed for two-way perpetual futures, market-neutral hedging, and tail risk protection with minimal Long/Short disparity ($|\text{Bull F1} - \text{Bear F1}| < 0.085$) and high Macro F1:
+
+| Horizon | Master Balanced Architecture | Directional Accuracy | Bull F1 | Bear F1 | Macro F1 | F1 Gap (Disparity) | Market Coverage |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **7 Days** | Setup A (SHAP-5, Top 20% Gate) | **56.14%** | 0.5994 | **0.5155** | **0.5574** | **0.0839 (8.4%)** | 20.0% |
+| **14 Days** | Dual-Head Specialist (A-35% / B-20%) | **60.99%** | 0.6406 | **0.5734** | **0.6070** | **0.0672 (6.7%)** | 44.9% |
+| **30 Days** | Dual-Q 30% (Setup B) | **58.67%** | 0.6019 | **0.5703** | **0.5861** | **0.0316 (3.1%)** | 60.0% |
+| **90 Days** | Dual-Q 25% (Setup B) | **63.35%** | 0.6111 | **0.6534** | **0.6322** | **0.0423 (4.2%)** | 50.0% |
 
 ---
 
