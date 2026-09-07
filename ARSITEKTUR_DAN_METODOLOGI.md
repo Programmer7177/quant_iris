@@ -12,7 +12,8 @@ C:\Mirza Personal\crypto quant\
 ├── bitcoin_quant_forecasting_master_pipeline.ipynb  <-- Notebook utama seluruh alur eksperimen
 ├── forecast_engine.py                              <-- Production engine otomatis
 ├── config_presets.py                               <-- Preset konfigurasi tervalidasi (Setup A & Setup B)
-├── refrensi_metode.md                              <-- Pemetaan 6 jurnal arXiv ke bagian notebook
+├── refrensi_metode.md                              <-- Pemetaan 30 jurnal arXiv ke bagian notebook
+├── PERJALANAN_RISET_DAN_CATATAN_TEMUAN.md          <-- Jurnal komprehensif hipotesis & kegagalan
 ├── ARSITEKTUR_DAN_METODOLOGI.md                    <-- Dokumen ini (Master Technical Documentation)
 │
 ├── data/                                           <-- Folder repositori dataset & hasil audit
@@ -25,13 +26,11 @@ C:\Mirza Personal\crypto quant\
 │   ├── active_learning_results.csv                 (Benchmark lengkap Active Learning QBC)
 │   └── quant_loss_metalabeling_results.csv         (Benchmark Meta-Labeling & Triple Barrier)
 │
-├── jurnal/                                         <-- Berkas PDF asli penelitian ilmiah open-access
-│   ├── 2608.26174_profit_optimized_thresholds.pdf  (Pelabelan batas volatilitas dinamis ATR)
-│   ├── 2602.00776_explainable_patterns_crypto.pdf  (Seleksi fitur mikrostruktur SHAP)
-│   ├── 2507.05470_temporal_conformal_pred.pdf      (Conformal prediction & selective trading)
-│   ├── 2608.17342_mofe_fourier_neural_op.pdf       (Mixture-of-Experts & rezim pasar)
-│   ├── 2411.06327_onchain_flows_liquidity.pdf      (Dinamika likuiditas on-chain & bursa)
-│   └── 2602.07018_extremity_premium_regimes.pdf    (Rezim sentimen ekstrem kurva-U)
+├── jurnal/                                         <-- 30 Berkas PDF asli penelitian ilmiah open-access arXiv
+│   ├── 2608.26174_profit_optimized_thresholds.pdf
+│   ├── 2602.00776_explainable_patterns_crypto.pdf
+│   ├── 2507.05470_temporal_conformal_pred.pdf
+│   └── ... (27 berkas PDF lainnya)
 │
 └── experiments/                                    <-- Arsip 19 script Python eksperimen mandiri
     ├── test_paper_profit_thresholds.py
@@ -66,13 +65,13 @@ Sistem beroperasi melalui pipa transmisi data 5-tahap:
            ▼
 [TAHAP 4: SPECIALIZED MULTI-HORIZON INFERENCE]
   ├─ 7d  : ExtraTrees Soft-Blend (50% Balanced + 50% Asymmetric W_bear=1.3).
-  ├─ 14d : ExtraTrees Balanced Classifier (class_weight='balanced').
-  ├─ 30d : ExtraTrees Soft-Blend (60% SHAP+HMM + 40% Asymmetric W_bear=1.6).
-  └─ 90d : Two-Model Veto-Consensus (Makro/Halving vs Paket SMA Bulanan).
+  ├─ 14d : ExtraTrees Balanced Classifier (class_weight='balanced') / Dual-Head Specialist.
+  ├─ 30d : ExtraTrees Soft-Blend (60% SHAP+HMM + 40% Asymmetric W_bear=1.6) / Setup B Dual-Q 30%.
+  └─ 90d : Two-Model Veto-Consensus / Setup B Dual-Q 25%.
            │
            ▼
 [TAHAP 5: CONFORMAL SELECTIVE GATING & EXECUTION]
-  ├─ Hitung margin keyakinan |Prob - 0.5|.
+  ├─ Hitung margin keyakinan |Prob - 0.5| atau Kuantil Terpisah (Dual-Threshold).
   ├─ Jika keyakinan < ambang batas kuantil -> Status: WAIT / CASH (Abstain).
   └─ Jika keyakinan >= ambang batas -> Eksekusi sinyal arah (BULL / BEAR) + Ukuran posisi asimetris HMM.
 ```
@@ -125,16 +124,31 @@ Sistem beroperasi melalui pipa transmisi data 5-tahap:
 
 ---
 
-## 4. Matriks Ringkasan Juara 1 Setiap Horizon (Master Benchmark)
+## 4. Dua Profil Pemenang: Top 1 (Win-Rate) vs Master Balanced (Symmetric Long/Short)
 
 Validasi Out-of-Sample 10 Tahun (Coinbase Daily 2016–2026, 8-Fold Expanding Window):
 
-| Horizon | Arsitektur Juara 1 | Akurasi (Micro F1) | Bull F1 (Naik) | Bear F1 (Crash) | Macro F1 (Keseimbangan) | Market Coverage |
-|---|---|:---:|:---:|:---:|:---:|:---:|
-| **Short 7 Hari** | Soft-Blend Hybrid (50:50, Gate 20%) | **57.70%** | 0.6845 | 0.3585 | 0.5215 | 20.0% |
-| **Short 14 Hari** | Setup A (SHAP-5, Gate 35%) | **61.50%** | 0.6983 | 0.4680 | 0.5832 | 35.0% |
-| **Medium 30 Hari** | Soft-Blend Hybrid (60:40, Gate 40%) | **62.38%** | 0.7019 | 0.4904 | 0.5962 | 40.0% |
-| **Long 90 Hari** | Veto-Consensus ($P_A \ge 0.58, P_B \le 0.44$) | **67.61%** | **0.7549** | **0.5228** | **0.6389** | **75.3%** |
+### A. Profil A: Top 1 (Win-Rate Hunter / Maksimalisasi Momentum Bull)
+Fokus: Menangkap pergerakan tren naik sebesar-besarnya untuk strategi *Spot Trend-Following / Long-Only*.
+
+| Horizon | Arsitektur Juara 1 | Akurasi | Bull F1 | Bear F1 | Macro F1 | Gap F1 | Coverage |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **7 Hari** | Soft-Blend Hybrid (50:50, Gate 20%) | **57.70%** | **0.6845** | 0.3585 | 0.5215 | 0.3260 | 20.0% |
+| **14 Hari** | Setup A (SHAP-5, Gate 35%) | **61.50%** | **0.6983** | 0.4680 | 0.5832 | 0.2303 | 35.0% |
+| **30 Hari** | Soft-Blend Hybrid (60:40, Gate 40%) | **62.38%** | **0.7019** | 0.4904 | 0.5962 | 0.2115 | 40.0% |
+| **90 Hari** | Veto-Consensus ($P_A \ge 0.58, P_B \le 0.44$) | **67.61%** | **0.7549** | 0.5228 | 0.6389 | 0.2321 | 75.3% |
+
+---
+
+### B. Profil B: Master Balanced (Symmetric F1 / Imbang & Anti-Crash)
+Fokus: Meminimalkan selisih antara Bull F1 dan Bear F1 ($|\\text{Bull} - \\text{Bear}| < 0.07$) dengan **Macro F1 setinggi mungkin**. Cocok untuk *Two-Way Perpetual Futures* atau *Hedging System*.
+
+| Horizon | Arsitektur Master Balanced | Akurasi | Bull F1 | Bear F1 | Macro F1 | Gap F1 (Selisih) | Coverage |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **7 Hari** | Dual-Q 20% (Setup B) | **54.35%** | 0.5550 | **0.5315** | **0.5432** | **0.0235 (2.3%)** | 40.0% |
+| **14 Hari** | Dual-Head Specialist (A-35% / B-20%) | **60.99%** | 0.6406 | **0.5734** | **0.6070** | **0.0672 (6.7%)** | 44.9% |
+| **30 Hari** | Dual-Q 30% (Setup B) | **58.67%** | 0.6019 | **0.5703** | **0.5861** | **0.0316 (3.1%)** | 60.0% |
+| **90 Hari** | Dual-Q 25% (Setup B) | **63.35%** | 0.6111 | **0.6534** | **0.6322** | **0.0423 (4.2%)** | 50.0% |
 
 ---
 
@@ -163,4 +177,4 @@ Buka file `bitcoin_quant_forecasting_master_pipeline.ipynb` menggunakan VS Code 
 ```bash
 jupyter notebook bitcoin_quant_forecasting_master_pipeline.ipynb
 ```
-Semua cell telah terstruktur dari Fase 1 (Load data) hingga Fase 10 (Live signal) dan siap dieksekusi ulang secara deterministik.
+Semua cell telah terstruktur dari Bagian 1 (Load data) hingga Bagian 12 (Live signal) dan siap dieksekusi ulang secara deterministik.
